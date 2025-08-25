@@ -48,17 +48,37 @@ export default function Button({
     ? getWhatsappLink()
     : buttonLink;
 
+  // Função de clique com conversão
+  const handleClick = (e) => {
+    e.preventDefault(); // evita redirecionamento automático
+    console.log("🔔 Clique no botão detectado");
+
+    if (typeof gtag_report_conversion === "function") {
+      console.log("✅ gtag_report_conversion chamado com:", finalButtonLink);
+      gtag_report_conversion(finalButtonLink);
+    } else {
+      console.warn("⚠️ gtag_report_conversion não está definido");
+    }
+
+    if (onClick) onClick(e);
+
+    // Redirecionamento manual
+    if (finalButtonLink) {
+      window.location.href = finalButtonLink;
+    }
+  };
+
   return (
     <CustomTag
       tagName={CustomTagName}
       {...(removeTarget ? {} : { target: "_blank" })}
-      {...(removeAnchor ? {} : { href: finalButtonLink })}
+      {...(removeAnchor ? {} : {})} // removemos o href do <a> para controlar redirecionamento manualmente
       className="inline-block max-w-full w-fit"
     >
       {animation ? (
         <MotionDivDownToUp className="w-auto">
           <button
-            onClick={onClick}
+            onClick={handleClick}
             className={`flex ${className} ${sizeFeatures} bg-buttonColor flex-row items-center justify-around transition ${color} text-labelButtons desktop1:hover:scale-110`}
           >
             <div
@@ -78,7 +98,7 @@ export default function Button({
       ) : (
         <div className="w-auto">
           <button
-            onClick={onClick}
+            onClick={handleClick}
             className={`flex ${className} ${sizeFeatures} bg-buttonColor flex-row items-center justify-around transition ${color} text-labelButtons desktop1:hover:scale-110`}
           >
             <div
